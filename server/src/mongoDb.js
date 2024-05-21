@@ -1,13 +1,50 @@
 import mongoose from 'mongoose';
 import { MONGO_URI } from './config.js';
 
-let User;
+let User: mongoose.Model<mongoose.Document>;
 
 // Connect to MongoDB
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
+
+// Types and Enums
+interface Artist {
+    name: string;
+    rank: number;
+}
+
+interface Song {
+    name: string;
+    rank: number;
+}
+
+interface TimeRangeData {
+    short_term: {
+        artists: Artist[];
+        songs: Song[];
+    };
+    medium_term: {
+        artists: Artist[];
+        songs: Song[];
+    };
+    long_term: {
+        artists: Artist[];
+        songs: Song[];
+    };
+}
+
+interface Login {
+    timestamp: Date;
+    data: TimeRangeData;
+}
+
+interface User {
+    spotifyId: string;
+    name: string;
+    logins: Login[];
+}
 
 // Schemas
 const artistSchema = new mongoose.Schema({
