@@ -3,13 +3,36 @@ import { useParams } from 'react-router';
 import { getSong, getSongFeatures } from '../spotifyApi';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts';
 
+interface SongFeatures {
+  danceability: number;
+  acousticness: number;
+  energy: number;
+  instrumentalness: number;
+  liveness: number;
+  valence: number;
+  speechiness: number;
+}
 
-const Song = () => {
-  const { id } = useParams();
-  const [features, setFeatures] = useState([0, 0, 0, 0, 0, 0, 0]);
-  const [song, setSong] = useState(null);
+interface FeatureData {
+  name: string;
+  value: number;
+  description: string;
+}
 
-  const featuresData = [
+const Song: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [features, setFeatures] = useState<SongFeatures>({
+    danceability: 0,
+    acousticness: 0,
+    energy: 0,
+    instrumentalness: 0,
+    liveness: 0,
+    valence: 0,
+    speechiness: 0,
+  });
+  const [song, setSong] = useState<any>(null);
+
+  const featuresData: FeatureData[] = [
     { name: 'Danceability', value: features.danceability * 100, description: 'Danceability describes how suitable a track is for dancing.' },
     { name: 'Acousticness', value: features.acousticness * 100, description: 'High value represents high confidence that the track is acoustic.' },
     { name: 'Energy', value: features.energy * 100, description: 'Energy represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy.' },
@@ -28,7 +51,6 @@ const Song = () => {
     '#99B898',
     '#FECEAB'
 ];
-
 
   useEffect(() => {
     window.scrollTo(0,0)
@@ -95,6 +117,5 @@ const Song = () => {
 );
 
 }
-
 
 export default Song;
