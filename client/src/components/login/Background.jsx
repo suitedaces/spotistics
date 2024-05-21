@@ -1,28 +1,37 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import p5 from 'p5';
 
-export function Background() {
-  let canvasRef;
+type FlyBox = {
+  offset: number;
+  delay: number;
+  getRandomDelay: () => number;
+  steps: number;
+  directions: p5.Vector[];
+  currentDirection: number;
+  iteration: number;
+  size: number;
+  start: () => void;
+  draw: () => void;
+};
 
-  const setCanvasRef = (node) => {
-    canvasRef = node;
-  };
+export function Background() {
+  const canvasRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const sketch = (p) => {
-      let origin;
+    const sketch = (p: p5) => {
+      let origin: p5.Vector;
       let frame = 0;
-      let flyBoxCount = 20;
-      let flyBoxes = [];
-      let flyBoxPause = 100;
-      let flyBoxColors = [];
+      const flyBoxCount = 20;
+      const flyBoxes: FlyBox[] = [];
+      const flyBoxPause = 100;
+      const flyBoxColors: p5.Color[] = [];
 
       p.setup = function () {
         p.createCanvas(p.windowWidth, p.windowHeight);
         origin = p.createVector(p.windowWidth / 2, p.windowHeight / 2);
 
         for (let i = -flyBoxCount / 2; i < flyBoxCount / 2; i++) {
-          let box = createFlyBox(i);
+          const box = createFlyBox(i);
           box.start();
           flyBoxes.push(box);
         }
@@ -35,7 +44,7 @@ export function Background() {
       p.draw = function () {
         p.rectMode(p.CENTER);
         for (let i = 0; i < flyBoxCount; i++) {
-          let flyBox = flyBoxes[i];
+          const flyBox = flyBoxes[i];
           flyBox.draw();
         }
 
@@ -53,11 +62,11 @@ export function Background() {
         origin = p.createVector(p.windowWidth / 2, p.windowHeight / 2);
       };
 
-      function createFlyBox(offset) {
+      function createFlyBox(offset: number): FlyBox {
         return {
           offset: offset,
           delay: 0,
-          getRandomDelay: () => { return p.random(0, flyBoxCount) * 15; },
+          getRandomDelay: () => p.random(0, flyBoxCount) * 15,
           steps: 0,
           directions: [p.createVector(-1, -1), p.createVector(-1, 1), p.createVector(1, -1), p.createVector(1, 1)],
           currentDirection: 0,
@@ -76,14 +85,14 @@ export function Background() {
 
             p.fill(flyBoxColors[this.iteration]);
             p.noStroke();
-            let dir = this.directions[this.currentDirection];
+            const dir = this.directions[this.currentDirection];
             p.rect(
               -dir.x * this.steps + origin.x + dir.x * origin.x - dir.x * this.offset * (this.size * 0.75),
               -dir.y * this.steps + origin.y + dir.y * origin.y + dir.y * this.offset * (this.size * 0.75),
               this.size, this.size);
 
             if (this.steps > Math.max(p.windowWidth, p.windowHeight)) {
-              let newDelay = this.getRandomDelay();
+              const newDelay = this.getRandomDelay();
               this.steps = -flyBoxPause + this.delay - newDelay;
               this.delay = newDelay;
               this.currentDirection = (this.currentDirection + 1) % 4;
@@ -94,9 +103,9 @@ export function Background() {
       }
     };
 
-    let myp5 = null;
-    if (canvasRef) {
-      myp5 = new p5(sketch, canvasRef);
+    let myp5: p5 | null = null;
+    if (canvasRef.current) {
+      myp5 = new p5(sketch, canvasRef.current);
     }
 
     return () => {
@@ -104,9 +113,9 @@ export function Background() {
         myp5.remove();
       }
     };
-  });
+  }, []);
 
-  return <div ref={setCanvasRef} className="absolute top-0 left-0 w-full h-full bg-gray-800"></div>;
+  return <div ref={canvasRef} className="absolute top-0 left-0 w-full h-full bg-gray-800"></div>;
 }
 
 export default Background;
