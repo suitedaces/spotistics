@@ -1,7 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL;
-
-export const LoginContent = () => {
-
+const API_URL: string = import.meta.env.VITE_API_URL;
+import React from 'react';
+export const LoginContent: React.FC = () => {
   return (
     <div className="h-screen w-screen flex items-center bg-center bg-cover">
       <div className="splash__container w-full mx-8 z-10 sm:mx-12 md:mx-24 xl:mx-auto">
@@ -14,7 +13,6 @@ export const LoginContent = () => {
             </span>
               <span className="text-black">phile 👨🏽‍🎤</span> 
             </p>
-
             </span>
             <div className="flex my-8 md:my-12">
               <a
@@ -42,5 +40,4 @@ export const LoginContent = () => {
     </div>
   );
 }
-
 export default LoginContent;
