@@ -2,8 +2,13 @@ import { NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getUser } from '../spotifyApi';
 
+interface UserProfile {
+  display_name: string;
+  images: { url: string }[];
+}
+
 function Navbar() {
-  const [userProfile, setUserProfile] = useState(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     getUser()

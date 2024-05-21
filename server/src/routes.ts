@@ -1,17 +1,13 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import querystring from 'querystring';
 import axios from 'axios';
-import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, FRONTEND_URI } from './config.js';
-import { generateRandomString, handleTokenExchange, fetchUserProfile, fetchUserTopData, updateOrCreateUser } from './utils.js';
-
+import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, FRONTEND_URI } from './config';
+import { generateRandomString, handleTokenExchange, fetchUserProfile, fetchUserTopData, updateOrCreateUser } from './utils';
 const router = express.Router();
-
 const stateKey = 'spotify_auth_state';
-
-router.get('/api/login', (req, res) => {
+router.get('/api/login', (req: Request, res: Response) => {
     const state = generateRandomString(16);
     res.cookie(stateKey, state);
-
     const scope = [
         'user-read-private',
         'user-read-email',
@@ -26,7 +22,6 @@ router.get('/api/login', (req, res) => {
         'user-read-playback-position',
         'user-library-read'
     ].join(' ');
-
     const queryParams = querystring.stringify({
         client_id: CLIENT_ID,
         response_type: 'code',
@@ -34,26 +29,19 @@ router.get('/api/login', (req, res) => {
         state: state,
         scope: scope,
     });
-
     res.redirect(`https://accounts.spotify.com/authorize?${queryParams}`);
 });
-
-router.get("/api/callback", async (req, res) => {
+router.get("/api/callback", async (req: Request, res: Response) => {
     const code = req.query.code || null;
-
     try {
-        const tokenResponse = await handleTokenExchange(code);
-
+        const tokenResponse = await handleTokenExchange(code as string);
         if (tokenResponse.status === 200) {
             const { access_token, refresh_token, expires_in } = tokenResponse.data;
-
             const userProfile = await fetchUserProfile(access_token);
             const spotifyId = userProfile.data.id;
             const name = userProfile.data.display_name;
-
             const currentLoginData = await fetchUserTopData(access_token);
             await updateOrCreateUser(spotifyId, name, currentLoginData);
-
             const queryParams = querystring.stringify({
                 access_token,
                 refresh_token,
@@ -68,11 +56,8 @@ router.get("/api/callback", async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
-
-
-router.get('/api/refresh_token', (req, res) => {
+router.get('/api/refresh_token', (req: Request, res: Response) => {
     const { refresh_token } = req.query;
-
     axios({
         method: 'post',
         url: 'https://accounts.spotify.com/api/token',
@@ -97,5 +82,4 @@ router.get('/api/refresh_token', (req, res) => {
             res.status(error.response.status).send(error.response.data);
         });
 });
-
 export default router;

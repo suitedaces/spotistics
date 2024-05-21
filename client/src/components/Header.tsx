@@ -1,6 +1,8 @@
 import { logOut } from '../spotifyApi';
 
-const Header = () => {
+import React from 'react';
+
+const Header: React.FC = () => {
     return (
         <div className='bg-black overflow-hidden'>
             <div className="md:ml-60 ml-6 pt-4 md:pt-8 flex flex-wrap justify-between items-center">
@@ -23,9 +25,3 @@ const Header = () => {
 }
 
 export default Header;
-
-
-
-
-
-
