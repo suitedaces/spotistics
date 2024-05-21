@@ -16,11 +16,11 @@ import Navbar from './components/Navbar';
 
 const queryClient = new QueryClient();
 
-function App() {
-    const [token, setToken] = useState(null);
+function App(): JSX.Element {
+    const [token, setToken] = useState<string | null>(null);
 
     useEffect(() => {
-        setToken(getAccessToken())
+        setToken(getAccessToken());
     }, []);
 
     return (
